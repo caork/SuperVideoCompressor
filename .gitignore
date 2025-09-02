@@ -1,0 +1,103 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# The .vscode folder contains launch configuration and tasks you configure in
+# VS Code which you may wish to be included in version control, so this line
+# is commented out by default.
+#.vscode/
+
+# Flutter/Dart/Pub related
+# Libraries should not include pubspec.lock, per https://dart.dev/guides/libraries/private-files#pubspeclock
+pubspec.lock
+**/doc/api/
+.dart_tool/
+build/
+flutter/ephemeral/
+packages
+pub-cache/
+pubspec.lock
+.flutter-plugins
+.flutter-plugins-dependencies
+
+# Android related
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+
+# iOS/XCode related
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/*.xcodeproj/*
+**/ios/**/*.xcscmblueprint
+**/ios/**/*.xccheckout
+**/ios/**/xcuserdata/
+
+# macOS
+**/macos/**/*.mode1v3
+**/macos/**/*.mode2v3
+**/macos/**/*.moved-aside
+**/macos/**/*.pbxuser
+**/macos/**/*.perspectivev3
+**/macos/**/*sync/
+**/macos/**/.sconsign.dblite
+**/macos/**/.tags*
+**/macos/**/.vagrant/
+**/macos/**/*.xcodeproj/*
+**/macos/**/*.xcscmblueprint
+**/macos/**/*.xccheckout
+**/macos/**/xcuserdata/
+
+# Windows
+**/windows/**/*.exe
+**/windows/**/*.exe~
+**/windows/**/*.dll
+**/windows/**/*.so
+**/windows/**/*.pdb
+**/windows/**/GeneratedPluginRegistrant.*
+
+# Linux
+**/linux/**/*.so
+**/linux/**/*.so.*
+**/linux/**/GeneratedPluginRegistrant.*
+
+# Coverage
+coverage/
+
+# Symbols
+app.*.symbols
+
+# Exceptions to above rules.
+!**/ios/**/default.mode1v3
+!**/ios/**/default.mode2v3
+!**/ios/**/default.pbxuser
+!**/ios/**/default.perspectivev3
+!**/macos/**/default.mode1v3
+!**/macos/**/default.mode2v3
+!**/macos/**/default.pbxuser
+!**/macos/**/default.perspectivev3
