@@ -49,6 +49,27 @@ class SettingsPanel extends StatelessWidget {
                 },
               ),
 
+              const SizedBox(height: 8),
+
+              // Output Folder
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      provider.outputPath != null
+                          ? 'Output: ${provider.outputPath!.split('/').last}'
+                          : 'No output path set',
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.folder_open),
+                    onPressed: provider.isCompressing ? null : provider.pickOutputDirectory,
+                    tooltip: 'Select Output Folder',
+                  ),
+                ],
+              ),
+
               const SizedBox(height: 16),
 
               // Video Codec
@@ -67,6 +88,22 @@ class SettingsPanel extends StatelessWidget {
 
               const SizedBox(height: 16),
 
+              // Encoder Type
+              DropdownButtonFormField<EncoderType>(
+                value: provider.settings.encoderType,
+                decoration: const InputDecoration(labelText: 'Encoder Type'),
+                items: EncoderType.values.map((type) {
+                  return DropdownMenuItem(value: type, child: Text(type.name.toUpperCase()));
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    provider.updateSettings(provider.settings.copyWith(encoderType: value));
+                  }
+                },
+              ),
+
+              const SizedBox(height: 16),
+
               // Resolution
               Row(
                 children: [
@@ -75,6 +112,7 @@ class SettingsPanel extends StatelessWidget {
                       initialValue: provider.settings.width?.toString() ?? '',
                       decoration: const InputDecoration(labelText: 'Width'),
                       keyboardType: TextInputType.number,
+                      enabled: !provider.settings.matchSourceDimensions,
                       onChanged: (value) {
                         final width = int.tryParse(value);
                         provider.updateSettings(provider.settings.copyWith(width: width));
@@ -89,6 +127,7 @@ class SettingsPanel extends StatelessWidget {
                       initialValue: provider.settings.height?.toString() ?? '',
                       decoration: const InputDecoration(labelText: 'Height'),
                       keyboardType: TextInputType.number,
+                      enabled: !provider.settings.matchSourceDimensions,
                       onChanged: (value) {
                         final height = int.tryParse(value);
                         provider.updateSettings(provider.settings.copyWith(height: height));
@@ -98,7 +137,20 @@ class SettingsPanel extends StatelessWidget {
                 ],
               ),
 
-              const SizedBox(height: 24),
+              const SizedBox(height: 8),
+
+              // Match Source Dimensions
+              CheckboxListTile(
+                title: const Text('Match source dimensions'),
+                value: provider.settings.matchSourceDimensions,
+                onChanged: (value) {
+                  if (value != null) {
+                    provider.updateSettings(provider.settings.copyWith(matchSourceDimensions: value));
+                  }
+                },
+              ),
+
+              const SizedBox(height: 16),
 
               // Action Buttons
               Row(

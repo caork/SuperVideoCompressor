@@ -65,11 +65,18 @@ The app follows a layered architecture:
 - `path_provider`: File system access
 
 ## Building
-
+``bash
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH 
+```
 ### Linux
 ```bash
 flutter build linux --release
 ```
+
+### Android
+```bash
+export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64 && export PATH=$JAVA_HOME/bin:$PATH && flutter clean && flutter build apk
+```bash
 
 ### macOS
 ```bash

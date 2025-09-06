@@ -91,8 +91,16 @@ class _PreviewPanelState extends State<PreviewPanel> {
                 Text('Path: ${provider.outputPath}'),
                 const SizedBox(height: 8),
                 ElevatedButton.icon(
-                  onPressed: () {
-                    // Open output directory
+                  onPressed: () async {
+                    if (provider.outputPath != null) {
+                      // Open the output directory
+                      final directory = provider.outputPath!.substring(0, provider.outputPath!.lastIndexOf('/'));
+                      // Note: Opening directory requires platform-specific code
+                      // For now, we'll show a snackbar
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Output saved to: $directory')),
+                      );
+                    }
                   },
                   icon: const Icon(Icons.folder_open),
                   label: const Text('Open Output Folder'),
@@ -106,7 +114,67 @@ class _PreviewPanelState extends State<PreviewPanel> {
   }
 
   Widget _buildVideoPlayer(String videoPath) {
-    // Initialize video player
+    // Check if video_player is supported on this platform
+    if (Platform.isLinux) {
+      // On Linux, show a placeholder since video_player doesn't support Linux
+      return Column(
+        children: [
+          Expanded(
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[200],
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.videocam_off, size: 48, color: Colors.grey),
+                    SizedBox(height: 16),
+                    Text(
+                      'Video preview not available on Linux',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Video compression will still work',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Colors.grey, fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                onPressed: null,
+                icon: const Icon(Icons.play_arrow, color: Colors.grey),
+              ),
+              Expanded(
+                child: Container(
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+              IconButton(
+                onPressed: null,
+                icon: const Icon(Icons.volume_up, color: Colors.grey),
+              ),
+            ],
+          ),
+        ],
+      );
+    }
+
+    // Initialize video player for supported platforms
     _controller ??= VideoPlayerController.file(File(videoPath))
       ..initialize().then((_) {
         setState(() {});

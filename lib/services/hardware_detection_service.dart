@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
+import 'package:ffmpeg_kit_flutter_full/ffmpeg_kit.dart';
 import '../models/hardware_info.dart';
 import '../models/compression_settings.dart';
 
 class HardwareDetectionService {
-  final FlutterFFmpeg _ffmpeg = FlutterFFmpeg();
 
   Future<HardwareInfo> detectHardwareAcceleration() async {
     final info = HardwareInfo.detect();
@@ -55,22 +54,97 @@ class HardwareDetectionService {
 
   Future<bool> _testAcceleration(String accel) async {
     try {
-      // Test with a simple command
-      final command = '-f lavfi -i testsrc=duration=1:size=320x240:rate=1 -c:v libx264 -f null -';
-      final result = await _ffmpeg.execute(command);
-      return result == 0;
+      if (Platform.isLinux) {
+        // Use system ffmpeg on Linux
+        final result = await Process.run('ffmpeg', [
+          '-f', 'lavfi',
+          '-i', 'testsrc=duration=1:size=320x240:rate=1',
+          '-c:v', 'libx264',
+          '-f', 'null', '-'
+        ]);
+        return result.exitCode == 0;
+      } else {
+        // Use ffmpeg_kit_flutter_full on mobile platforms
+        final session = await FFmpegKit.execute(
+          '-f lavfi -i testsrc=duration=1:size=320x240:rate=1 -c:v libx264 -f null -'
+        );
+        final returnCode = await session.getReturnCode();
+        return returnCode?.getValue() == 0;
+      }
     } catch (e) {
       return false;
     }
   }
 
   Future<List<String>> getAvailableEncoders() async {
-    // This would query FFmpeg for available encoders
-    return ['libx264', 'libx265', 'libvpx-vp9'];
+    try {
+      if (Platform.isLinux) {
+        // Query system FFmpeg for encoders
+        final result = await Process.run('ffmpeg', ['-encoders']);
+        if (result.exitCode == 0) {
+          final output = result.stdout as String;
+          final encoders = <String>[];
+          final lines = output.split('\n');
+          for (final line in lines) {
+            if (line.contains('V') && line.contains('h264')) {
+              encoders.add('libx264');
+            }
+            if (line.contains('V') && line.contains('h265')) {
+              encoders.add('libx265');
+            }
+            if (line.contains('V') && line.contains('vp9')) {
+              encoders.add('libvpx-vp9');
+            }
+            if (line.contains('V') && line.contains('av1')) {
+              encoders.add('libaom-av1');
+            }
+          }
+          return encoders;
+        }
+      } else {
+        // For mobile, return common encoders
+        return ['libx264', 'libx265', 'libvpx-vp9', 'libaom-av1'];
+      }
+    } catch (e) {
+      // Fallback
+      return ['libx264', 'libx265'];
+    }
+    return ['libx264', 'libx265'];
   }
 
   Future<List<String>> getAvailableDecoders() async {
-    // This would query FFmpeg for available decoders
-    return ['h264', 'h265', 'vp9'];
+    try {
+      if (Platform.isLinux) {
+        // Query system FFmpeg for decoders
+        final result = await Process.run('ffmpeg', ['-decoders']);
+        if (result.exitCode == 0) {
+          final output = result.stdout as String;
+          final decoders = <String>[];
+          final lines = output.split('\n');
+          for (final line in lines) {
+            if (line.contains('V') && line.contains('h264')) {
+              decoders.add('h264');
+            }
+            if (line.contains('V') && line.contains('h265')) {
+              decoders.add('hevc');
+            }
+            if (line.contains('V') && line.contains('vp9')) {
+              decoders.add('vp9');
+            }
+            if (line.contains('V') && line.contains('av1')) {
+              decoders.add('av1');
+            }
+          }
+          return decoders;
+        }
+      } else {
+        // For mobile, return common decoders
+        return ['h264', 'hevc', 'vp9', 'av1'];
+      }
+    } catch (e) {
+      // Fallback
+      return ['h264', 'hevc'];
+    }
+    return ['h264', 'hevc'];
   }
 }

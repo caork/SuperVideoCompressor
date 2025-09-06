@@ -24,10 +24,27 @@ class FileService {
   }
 
   Future<String> getDefaultOutputPath(VideoFile input, String format) async {
-    final directory = await getApplicationDocumentsDirectory();
+    String? directoryPath;
+
+    if (Platform.isAndroid || Platform.isIOS) {
+      // Use downloads directory on mobile
+      final directory = await getDownloadsDirectory();
+      directoryPath = directory?.path;
+    } else if (Platform.isLinux || Platform.isMacOS || Platform.isWindows) {
+      // Use desktop downloads or documents
+      final directory = await getDownloadsDirectory() ?? await getApplicationDocumentsDirectory();
+      directoryPath = directory.path;
+    }
+
+    if (directoryPath == null) {
+      // Fallback
+      final directory = await getApplicationDocumentsDirectory();
+      directoryPath = directory.path;
+    }
+
     final inputName = input.name.split('.').first;
     final outputName = '${inputName}_compressed.$format';
-    return '${directory.path}/$outputName';
+    return '$directoryPath/$outputName';
   }
 
   Future<String> generateThumbnail(String videoPath, String thumbnailPath) async {
